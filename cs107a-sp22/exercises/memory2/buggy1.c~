@@ -1,0 +1,14 @@
+#include <stddef.h>
+
+int main() {
+  struct list_node {
+    struct list_node *next;
+  };
+  struct list_node selfloop;
+  selfloop.next = &selfloop;
+  struct list_node *curr = &selfloop;
+  while (curr != NULL) {
+    curr = curr->next;
+  }
+  return 0;
+}
