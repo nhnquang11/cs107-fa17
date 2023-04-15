@@ -1,0 +1,122 @@
+Problem 1: Entomogogy Tooling
+    a. Do a backtrace within gdb.
+        1. gdb PROGRAM_NAME
+        2. r (ARGUMENTS_TO_PROGRAM)
+        3. bt
+    b. file: mysort.c
+       function: cmp_pstr
+       line: 34
+    c. valgrind
+    d. p is a pointer to the string you want to print out. Try print 
+       *(char **)p instead.
+       
+Problem 2: After reading these problem titles you won't like puns one bit
+              Exp          |  Dec |     Bin     | Hex
+    --------------------------------------------------
+    (signed char)(1<<7)    | -128 | 0b1000.0000 | 0x80
+    (unsigned char)(1<<7)  |  128 | 0b1000.0000 | 0x80
+    (signed char)(0xF7F)   |  127 | 0b0111.1111 | 0x7F
+    (unsigned char)(0xF7F) |  127 | 0b0111.1111 | 0x7F
+    (char)((~1)&(3|14))    |   14 | 0b0000.1110 | 0x0e
+
+Problem 3: I bet Marx has a lecture on the types of classes
+    a. unsinged char
+    b. No. We are only interested in the bit representation, not the value
+       itself, so the sign does not matter.
+    c. typedef unsigned char week_schedule_t;
+    d. bool has_lecture(week_schedule_t class, char day_of_week) {
+           return ((class >> day_of_week) & 1) == 1;
+       }
+    e. i. Which days of the week you have lectures for either classes.
+       ii. Which days of the week you have lectures for exactly one class 
+           of the two but not the other.
+       iii. Which days of the week you don't have lectures for that class.
+
+Problem 4: Still a better encryption scheme than Facebook
+    a. void rot13_array_fill(struct rot13_data *array, size_t length) {
+           for (size_t i = 0; i < length; ++i) {
+               size_t str_length = strlen(array[i]);
+               for (size_t j = 0; j < str_length; ++j) {
+                   char source_letter = array[i].source[j];
+                   if (source_letter <= 'm') {
+                       array[i].rotated[j] = source_letter + 13;
+                   } else {
+                       array[i].rotated[j] = source_letter - 13;
+                   }
+               }
+               array[i].rotated[str_length] = '\0';
+           }
+       }
+    b. struct rot13_data array[1];
+       strcpy(array[0].source, "hello");
+       rot13_array_fill(array, 1);
+
+Problem 5: Nearly Headless? How can your string be Nearly Headless?
+    a. void make_nearly_headless(char *str) {
+           size_t bytes_to_move = strlen(str);
+           memmove(str, str + 1, bytes_to_move);
+       }
+    b. i. No. The string is stored in read-only memory.
+       ii. Yes.
+       iii. No. There is no NUL terminator in this string, so strlen will 
+            invoke undefined behaviour.
+       iv. No. Because s is a pointer to a pointer.
+       v. Yes.
+       vi. No. there are only 5 bytes of memory in the block, so strcpy will
+          write the NUL terminator into unallocated memory.
+       vii. No. strncpy will only copy over 5 bytes, which does not 
+            include the NUL terminator.
+
+Problem 6: why don't you just meet me in the middle?
+    a. void *get_middle(void *array, size_t width, size_t num_elements) {
+           size_t mid = floor(num_elements / 2);
+           void* ptr = (char *)array + width * mid;
+           return ptr;
+       }
+    b. Since the array is generic, the element could be any type with any 
+       size.
+    c.  void get_middle(void *array, size_t width, size_t num_elements, void *ptr) {
+           size_t mid = floor(num_elements / 2);
+           ptr = (char *)array + width * mid;
+       }
+
+       int *ptr = NULL;
+       get_middle(array, sizeof(int), 5, ptr);
+       assert(ptr = &array[2]);
+       assert(*ptr = 3);
+
+Problem 7: The Data is Array-dy Encrypted!
+    a. bool decrypt_xor_0xb2(void *chunk_ptr) {
+           *(int *)chunk_ptr ^= 0xb2;
+           return true;
+       }
+    b. bool decrypt_all(void *data_chunks, size_t num_chunks, size_t chunk_size, bool (*decrypt)(void *)) {
+           bool success = true;
+           for (int i = 0; i < num_chunks; ++i) {
+               void *chunk_ptr = (char *)data_chunks + i * chunk_size;
+               success &&= decrypt(chunk_ptr);
+           }
+           return success;
+       }
+    c. int arr[] = {1, 2, 3, 4, 5};
+       size_t num_chunks = sizeof(arr);
+       size_t chunk_size = sizeof(arr[0]);
+       decrypt_all(arr, num_chunks, chunk_size, &decrypt_or_0xb2);
+    d. bool decrypt_xor_0xb2(void *chunk_ptr) {
+           **(int **)chunk_ptr ^= 0xb2;
+           return true;
+       }
+    e. bool decrypt_all(void *data_chunks, size_t num_chunks, size_t chunk_size, bool (*decrypt)(void *)) {
+           bool success = true;
+           for (int i = 0; i < num_chunks; ++i) {
+               void *chunk_ptr = (char *)data_chunks + i * chunk_size;
+               success &&= decrypt(&chunk_ptr);
+           }
+           return success;
+       }
+
+
+
+
+
+
